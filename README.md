@@ -16,7 +16,7 @@ Execute o comando para encontrar o nome do container:
 ```bash
 docker ps | grep 'postgres'
 ```
-###### Saída esperada: {{NOME_DO_CONTAINER}} (ex: linux_fx_dados.1.sgp6tvxpvee0snib6v7m9p79m)
+###### Saída esperada: {{NOME_DO_CONTAINER}} (ex: teste.1.sgpeeddsde0snib6v7m9p79m)
 
 #### 2. Criar Script de Backup
 Crie o arquivo de script:
