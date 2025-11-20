@@ -1,7 +1,9 @@
 ## Automatizar Backup e Restore do PostgreSQL com Docker + EasyPanel
+
 Tutorial para fazer um backups automáticos da sua base de dados Postgres utilizando o EasyPanel básico
 
 ### 📋 Pré-requisitos
+
 - Docker instalado e rodando
 - EasyPanel configurado
 - Acesso ao terminal do servidor
@@ -9,22 +11,27 @@ Tutorial para fazer um backups automáticos da sua base de dados Postgres utiliz
 ### 🔄 Backup Automatizado
 
 #### 1. Identificar o Container PostgreSQL
-Caminho para o console no EasyPanel:
-HOME->Configurações->Geral->Servidor->Console
+
+Caminho para o console no EasyPanel:\
+**HOME->Configurações->Geral->Servidor->Console**
 
 Execute o comando para encontrar o nome do container:
+
 ```bash
 docker ps | grep 'postgres'
 ```
+
 ###### Saída esperada: {{NOME_DO_CONTAINER}} (ex: teste.1.sgpeeddsde0snib6v7m9p79m)
 
 #### 2. Criar Script de Backup
+
 Crie o arquivo de script:
 
 ```
 mkdir -p /var/scripts/
 nano /var/scripts/backup_{{NOME_DO_BANCO}}.sh
 ```
+
 Cole o seguinte conteúdo, ajustando as variáveis:
 
 ```
@@ -59,39 +66,48 @@ find $BACKUP_DIR -type f -prune -mtime +7 -exec rm {} \;
 echo "Limpeza de backups com mais de 7 dias concluida."
 ```
 
-### Variáveis a serem preenchidas:
+### Variáveis a serem preenchidas
 
-* {{NOME_DO_CONTAINER}}: Nome do container PostgreSQL (obtido no passo 1)
+- {{NOME_DO_CONTAINER}}: Nome do container PostgreSQL (obtido no passo 1)
 
-* {{NOME_DO_BANCO}}: Nome do banco de dados
+- {{NOME_DO_BANCO}}: Nome do banco de dados
 
-* {{USUARIO_POSTGRES}}: Usuário do PostgreSQL (geralmente 'postgres')
+- {{USUARIO_POSTGRES}}: Usuário do PostgreSQL (geralmente 'postgres')
 
-* {{DIRETORIO_BACKUP}}: Diretório onde salvar backups (ex: /etc/easypanel/backups/{{NOME_DO_BANCO}}/dados/)
+- {{DIRETORIO_BACKUP}}: Diretório onde salvar backups (ex: /etc/easypanel/backups/{{NOME_DO_BANCO}}/dados/)
 
 #### 3. Permissões e Agendamento
+
+Agora precisamos gravar a tarefa no servidor para que a rotina seja executada periodicamente.\
 Dê permissão de execução:
 
 ```
 chmod +x /var/scripts/backup_{{NOME_DO_BANCO}}.sh
 ```
+
 Agende no cron:
 
 ```
 crontab -e
 ```
+
 \
 Adicione a linha (ajuste o horário conforme necessidade):
 
 ex.: backup diário às 23:00
+
 ```
 0 23 * * * /var/scripts/backup_{{NOME_DO_BANCO}}.sh >> /var/scripts/backup_bd.log 2>&1
 ```
+
 ### 🔙 Preparar o Restore do Backup
+
 1. Criar Script de Restore
+
 ```
 nano /var/scripts/restore_{{NOME_DO_BANCO}}.sh
 ```
+
 Cole o script abaixo, ajustando as variáveis:
 
 ```
@@ -173,34 +189,46 @@ restaurar_banco() {
 
 restaurar_banco
 ```
+
 \
 2. Permissões de Execução
+
 ```
 chmod +x /var/scripts/restore_{{NOME_DO_BANCO}}.sh
 ```
 
 ### Como Usar o Restore
+
 1. Listar Backups Disponíveis
+
 ```
 cd {{DIRETORIO_BACKUP}} ls
 ```
+
 2. Executar Restore
+
 ```
 ./var/scripts/restore_{{NOME_DO_BANCO}}.sh
 ```
 
 O script irá:
-* Listar todos os backups disponíveis
-* Pedir o nome completo do arquivo para restore
-* Executar todo o processo automaticamente
+
+- Listar todos os backups disponíveis
+- Pedir o nome completo do arquivo para restore
+- Executar todo o processo automaticamente
 
 ### 📝 Notas Importantes
-* Backups antigos são automaticamente removidos após 7 dias, opcional.
-* Teste o restore em ambiente de desenvolvimento antes de usar em produção
-* Verifique os logs em /var/scripts/backup_bd.log para troubleshooting
-* Mantenha as credenciais seguras e ajuste as permissões dos arquivos
+
+- Backups antigos são automaticamente removidos após 7 dias, opcional.
+
+- Teste o restore em ambiente de desenvolvimento antes de usar em produção
+- Verifique os logs em /var/scripts/backup_bd.log para troubleshooting
+- Mantenha as credenciais seguras e ajuste as permissões dos arquivos
 
 #### 🆘 Troubleshooting
-* Container não encontrado: Verifique se o Docker está rodando e o nome do container
-* Erro de permissão: Certifique-se que o usuário tem acesso ao diretório de backups
-* Backup vazio: Verifique se o banco de dados existe e tem dados
+
+- Container não encontrado: Verifique se o Docker está rodando e o nome do container
+
+- Erro de permissão: Certifique-se que o usuário tem acesso ao diretório de backups
+- Backup vazio: Verifique se o banco de dados existe e tem dados
+
