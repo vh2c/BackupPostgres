@@ -76,6 +76,11 @@ echo "Limpeza de backups com mais de 7 dias concluida."
 
 - {{DIRETORIO_BACKUP}}: Diretório onde salvar backups (ex: /etc/easypanel/backups/{{NOME_DO_BANCO}}/dados/)
 
+Para salvar e sair:
+```
+CTRL+X e CTRL+Y
+```
+
 #### 3. Permissões e Agendamento
 
 Agora precisamos gravar a tarefa no servidor para que a rotina seja executada periodicamente.\
@@ -189,7 +194,10 @@ restaurar_banco() {
 
 restaurar_banco
 ```
-
+Para salvar e sair:
+```
+CTRL+X e CTRL+Y
+```
 \
 2. Permissões de Execução
 
